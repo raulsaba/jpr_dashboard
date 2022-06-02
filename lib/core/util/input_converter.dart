@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_jpr_dashboard/core/error/failure.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class InputConverter {
   Either<Failure, int> stringToUnsignedInteger(String str) {
     try {

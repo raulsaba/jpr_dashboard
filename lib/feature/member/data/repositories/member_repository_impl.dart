@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_jpr_dashboard/core/error/exceptions.dart';
 import 'package:flutter_jpr_dashboard/feature/member/data/models/member_model.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/exceptions.dart';
@@ -11,6 +12,7 @@ import '../../domain/repositories/member_repository.dart';
 import '../datasources/member_local_datasource.dart';
 import '../datasources/member_remote_datasource.dart';
 
+@LazySingleton(as: MemberRepository)
 class MembersRepositoryImpl implements MemberRepository {
   final MemberRemoteDataSource remoteDataSource;
   final MemberLocalDataSource localDataSource;

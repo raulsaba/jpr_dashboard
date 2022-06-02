@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_jpr_dashboard/feature/member/data/models/member_model.dart';
 
 import '../../../../core/error/failure.dart';
 import '../entities/member_entity.dart';

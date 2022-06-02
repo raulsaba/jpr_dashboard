@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_jpr_dashboard/config/get_it.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies(Env.dev);
   runApp(const MyApp());
 }
 

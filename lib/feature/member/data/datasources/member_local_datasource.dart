@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter_jpr_dashboard/core/error/exceptions.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/member_model.dart';
@@ -13,6 +14,7 @@ abstract class MemberLocalDataSource {
   Future<void> cacheMemberList(List<MemberModel> memberListToCache);
 }
 
+@LazySingleton(as: MemberLocalDataSource)
 class MemberLocalDataSourceImpl implements MemberLocalDataSource {
   final SharedPreferences sharedPreferences;
 

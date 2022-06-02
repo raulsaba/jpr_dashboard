@@ -54,14 +54,19 @@ void main() {
     group("GetMemberEvent", () {
       const tNumberString = '1';
       const tNumberParsed = 1;
-      const tMembber =
+      const tMember =
           Member(id: 1, name: "Test Name", phoneNumber: "(00) 00000-0000");
+
+      void setUpMockInputConverterSuccess() =>
+          when(mockInputConverter.stringToUnsignedInteger(any))
+              .thenReturn(const Right(tNumberParsed));
 
       test(
         "shoudl call the InputConverter to validate and convert the string to an unsigned integer",
         () async {
-          when(mockInputConverter.stringToUnsignedInteger(any))
-              .thenReturn(const Right(tNumberParsed));
+          setUpMockInputConverterSuccess();
+          when(mockGetMember(any))
+              .thenAnswer((realInvocation) async => const Right(tMember));
 
           memberBloc.add(const GetMemberEvent(tNumberString));
           await untilCalled(mockInputConverter.stringToUnsignedInteger(any));
@@ -70,31 +75,77 @@ void main() {
         },
       );
 
-      test(
-        "emits [MemberError] when getMemberEvent is added.",
-        () async {
-          when(mockInputConverter.stringToUnsignedInteger(any))
-              .thenReturn(Left(InvalidInputFailure()));
-          memberBloc.add(const GetMemberEvent(tNumberString));
-
-          final expected = [
-            MemberInitial(),
-            const MemberError(message: INPUT_FAILURE_MESSAGE)
-          ];
-          expectLater(memberBloc.state, emitsInOrder(expected));
-        },
-      );
-
       blocTest<MemberBloc, MemberState>(
-        'emits [MemberError] when getMemberEvent is added.',
+        'emits [MemberError] for input failure when getMemberEvent is added.',
         build: () => memberBloc,
+        setUp: () => when(mockInputConverter.stringToUnsignedInteger(any))
+            .thenReturn(Left(InvalidInputFailure())),
         act: (bloc) {
-          when(mockInputConverter.stringToUnsignedInteger(any))
-              .thenReturn(Left(InvalidInputFailure()));
           bloc.add(const GetMemberEvent(tNumberString));
         },
         expect: () =>
             const <MemberState>[MemberError(message: INPUT_FAILURE_MESSAGE)],
+      );
+
+      final expetedSuccess = [
+        MemberLoading(),
+        const MemberLoaded(tMember),
+      ];
+
+      blocTest<MemberBloc, MemberState>(
+        'emits [MemberLoading, MemberLoaded] when getMemberEvent is added.',
+        build: () => memberBloc,
+        setUp: () {
+          setUpMockInputConverterSuccess();
+          when(mockGetMember(any))
+              .thenAnswer((realInvocation) async => const Right(tMember));
+        },
+        act: (bloc) async {
+          bloc.add(const GetMemberEvent(tNumberString));
+          await untilCalled(mockGetMember(any));
+        },
+        // expect: () => const <MemberState>[MemberLoaded(tMember)],
+        expect: () => expetedSuccess,
+      );
+
+      final expetedNetworkFailure = [
+        MemberLoading(),
+        const MemberError(message: NETWORK_FAILURE_MESSAGE),
+      ];
+
+      blocTest<MemberBloc, MemberState>(
+        'emits [MemberLoading, MemberError] for network failure when getMemberEvent is added.',
+        build: () => memberBloc,
+        setUp: () {
+          setUpMockInputConverterSuccess();
+          when(mockGetMember(any))
+              .thenAnswer((realInvocation) async => Left(NetworkFailure()));
+        },
+        act: (bloc) async {
+          bloc.add(const GetMemberEvent(tNumberString));
+          await untilCalled(mockGetMember(any));
+        },
+        expect: () => expetedNetworkFailure,
+      );
+
+      final expetedServerFailure = [
+        MemberLoading(),
+        const MemberError(message: SERVER_FAILURE_MESSAGE),
+      ];
+
+      blocTest<MemberBloc, MemberState>(
+        'emits [MemberLoading, MemberError] for server failure when getMemberEvent is added.',
+        build: () => memberBloc,
+        setUp: () {
+          setUpMockInputConverterSuccess();
+          when(mockGetMember(any))
+              .thenAnswer((realInvocation) async => Left(ServerFailure()));
+        },
+        act: (bloc) async {
+          bloc.add(const GetMemberEvent(tNumberString));
+          await untilCalled(mockGetMember(any));
+        },
+        expect: () => expetedServerFailure,
       );
     });
   });

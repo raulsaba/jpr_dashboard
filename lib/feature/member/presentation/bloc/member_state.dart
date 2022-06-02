@@ -11,13 +11,22 @@ class MemberInitial extends MemberState {}
 
 class MemberLoading extends MemberState {}
 
-class MemberLoaded extends MemberState {
+class ListMemberLoaded extends MemberState {
   final List<Member> memberList;
 
-  const MemberLoaded(this.memberList);
+  const ListMemberLoaded(this.memberList);
 
   @override
   List<Object> get props => [memberList];
+}
+
+class MemberLoaded extends MemberState {
+  final Member member;
+
+  const MemberLoaded(this.member);
+
+  @override
+  List<Object> get props => [member];
 }
 
 class MemberError extends MemberState {

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_jpr_dashboard/core/error/exceptions.dart';
 import 'package:http/http.dart' as http;
+import 'package:injectable/injectable.dart';
 
 import '../models/member_model.dart';
 
@@ -13,6 +14,7 @@ abstract class MemberRemoteDataSource {
   Future<bool> removeMember(int id);
 }
 
+@LazySingleton(as: MemberRemoteDataSource)
 class MemberRemoteDataSourceImpl implements MemberRemoteDataSource {
   final http.Client client;
 
